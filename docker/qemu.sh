@@ -6,14 +6,14 @@ set -euo pipefail
 # shellcheck disable=SC1091
 . lib.sh
 
-build_static_libffi () {
+build_static_libffi() {
     local version=3.0.13
+    if_ubuntu_ge 24.04 version=3.4.6
 
     local td
     td="$(mktemp -d)"
 
     pushd "${td}"
-
 
     curl --retry 3 -sSfL "https://github.com/libffi/libffi/archive/refs/tags/v${version}.tar.gz" -O -L
     tar --strip-components=1 -xzf "v${version}.tar.gz"
@@ -26,12 +26,15 @@ build_static_libffi () {
     rm -rf "${td}"
 }
 
-build_static_libmount () {
+build_static_libmount() {
     local version_spec=2.23.2
     local version=2.23
 
     if_ubuntu_ge 22.04 version_spec=2.37.2
     if_ubuntu_ge 22.04 version=2.37
+
+    if_ubuntu_ge 24.04 version_spec=2.40.2
+    if_ubuntu_ge 24.04 version=2.40
 
     local td
     td="$(mktemp -d)"
@@ -49,9 +52,9 @@ build_static_libmount () {
     rm -rf "${td}"
 }
 
-
 build_static_libattr() {
     local version=2.4.46
+    if_ubuntu_ge 24.04 version=2.5.2
 
     local td
     td="$(mktemp -d)"
@@ -78,6 +81,7 @@ build_static_libattr() {
 
 build_static_libcap() {
     local version=2.22
+    if_ubuntu_ge 24.04 version=2.73
 
     local td
     td="$(mktemp -d)"
@@ -96,6 +100,7 @@ build_static_libcap() {
 
 build_static_pixman() {
     local version=0.34.0
+    if_ubuntu_ge 24.04 version=0.43.4
 
     local td
     td="$(mktemp -d)"
@@ -115,6 +120,7 @@ build_static_pixman() {
 
 build_static_slirp() {
     local version=4.1.0
+    if_ubuntu_ge 24.04 version=4.8.0
 
     local td
     td="$(mktemp -d)"
@@ -150,7 +156,7 @@ main() {
         libtool \
         make \
         patch \
-        python3 \
+        python3
 
     if_centos install_packages \
         gcc-c++ \
@@ -193,6 +199,7 @@ main() {
         libglib2.0-dev \
         libpixman-1-dev \
         libselinux1-dev \
+        libsqlite3-dev \
         zlib1g-dev
 
     # ubuntu no longer provides statically linked libmount
@@ -203,6 +210,7 @@ main() {
     is_ge_python36=$(python3 -c "import sys; print(int(sys.version_info >= (3, 6)))")
     if [[ "${is_ge_python36}" == "1" ]]; then
         if_ubuntu version=7.0.0
+        if_ubuntu_ge 24.04 version=9.1.2
         if_ubuntu install_packages ninja-build
     fi
 
@@ -212,6 +220,7 @@ main() {
     is_ge_python38=$(python3 -c "import sys; print(int(sys.version_info >= (3, 8)))")
     if [[ "${is_ge_python38}" == "1" ]]; then
         if_ubuntu version=8.2.2
+        if_ubuntu_ge 24.04 version=9.1.2
         if_ubuntu install_packages ninja-build meson python3-pip libslirp-dev
         if_ubuntu build_static_slirp
     fi
@@ -227,21 +236,21 @@ main() {
     local targets="${arch}-linux-user"
     local virtfs=""
     case "${softmmu}" in
-        softmmu)
-            if [ "${arch}" = "ppc64le" ]; then
-                targets="${targets},ppc64-softmmu"
-            else
-                targets="${targets},${arch}-softmmu"
-            fi
-            virtfs="--enable-virtfs"
-            ;;
-        "")
-            true
-            ;;
-        *)
-            echo "Invalid softmmu option: ${softmmu}"
-            exit 1
-            ;;
+    softmmu)
+        if [ "${arch}" = "ppc64le" ]; then
+            targets="${targets},ppc64-softmmu"
+        else
+            targets="${targets},${arch}-softmmu"
+        fi
+        virtfs="--enable-virtfs"
+        ;;
+    "")
+        true
+        ;;
+    *)
+        echo "Invalid softmmu option: ${softmmu}"
+        exit 1
+        ;;
     esac
 
     ./configure \
