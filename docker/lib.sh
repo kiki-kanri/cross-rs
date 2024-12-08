@@ -70,6 +70,7 @@ if_ubuntu_ge() {
 }
 
 GNU_MIRRORS=(
+    "https://mirrors.tuna.tsinghua.edu.cn/gnu/"
     "https://ftp.gnu.org/gnu/"
     "https://ftpmirror.gnu.org/"
 )
