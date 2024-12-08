@@ -82,10 +82,13 @@ download_mirrors() {
     shift
 
     for mirror in "${@}"; do
-        if curl --retry 3 -sSfL "${mirror}/${relpath}/${filename}" -O; then
+        local url="${mirror}/${relpath}/${filename}"
+        url=$(echo "$url" | sed 's:/\+:/:g')
+        if curl --retry 3 -sSfL $url -O; then
             break
         fi
     done
+
     if [[ ! -f "${filename}" ]]; then
         echo "Unable to download ${filename}" >&2
         exit 1
