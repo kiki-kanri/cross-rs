@@ -17,7 +17,7 @@ install_packages() {
             if ! dpkg -L "${pkg}" >/dev/null 2>/dev/null; then
                 apt-get install --assume-yes --no-install-recommends "${pkg}"
 
-                purge_list+=( "${pkg}" )
+                purge_list+=("${pkg}")
             fi
         done
     else
@@ -26,14 +26,14 @@ install_packages() {
             if ! yum list installed "${pkg}" >/dev/null 2>/dev/null; then
                 yum install -y "${pkg}"
 
-                purge_list+=( "${pkg}" )
+                purge_list+=("${pkg}")
             fi
         done
     fi
 }
 
 purge_packages() {
-    if (( ${#purge_list[@]} )); then
+    if ((${#purge_list[@]})); then
         if grep -i ubuntu /etc/os-release; then
             apt-get purge --assume-yes --auto-remove "${purge_list[@]}"
         else
@@ -57,14 +57,17 @@ if_ubuntu() {
 if_ubuntu_ge() {
     if grep -q -i ubuntu /etc/os-release; then
         local ver
-        ver="$(source /etc/os-release; echo $VERSION_ID)"
+        ver="$(
+            source /etc/os-release
+            echo $VERSION_ID
+        )"
+
         if dpkg --compare-versions "$ver" "ge" "$1"; then
             shift
             eval "${@}"
         fi
     fi
 }
-
 
 GNU_MIRRORS=(
     "https://ftp.gnu.org/gnu/"
@@ -109,22 +112,22 @@ download_gcc() {
 docker_to_qemu_arch() {
     local arch="${1}"
     case "${arch}" in
-        arm64)
-            echo "aarch64"
-            ;;
-        386)
-            echo "i386"
-            ;;
-        amd64)
-            echo "x86_64"
-            ;;
-        arm|ppc64le|riscv64|s390x)
-            echo "${arch}"
-            ;;
-        *)
-            echo "Unknown Docker image architecture, got \"${arch}\"." >&2
-            exit 1
-            ;;
+    arm64)
+        echo "aarch64"
+        ;;
+    386)
+        echo "i386"
+        ;;
+    amd64)
+        echo "x86_64"
+        ;;
+    arm | ppc64le | riscv64 | s390x)
+        echo "${arch}"
+        ;;
+    *)
+        echo "Unknown Docker image architecture, got \"${arch}\"." >&2
+        exit 1
+        ;;
     esac
 }
 
@@ -137,39 +140,39 @@ docker_to_linux_arch() {
     local arch="${1}"
     local variant="${2}"
     case "${arch}" in
-        arm64)
-            echo "aarch64"
+    arm64)
+        echo "aarch64"
+        ;;
+    386)
+        echo "i686"
+        ;;
+    amd64)
+        echo "x86_64"
+        ;;
+    ppc64le)
+        echo "powerpc64le"
+        ;;
+    arm)
+        case "${variant}" in
+        v6)
+            echo "arm"
             ;;
-        386)
-            echo "i686"
-            ;;
-        amd64)
-            echo "x86_64"
-            ;;
-        ppc64le)
-            echo "powerpc64le"
-            ;;
-        arm)
-            case "${variant}" in
-                v6)
-                    echo "arm"
-                    ;;
-                ""|v7)
-                    echo "armv7"
-                    ;;
-                *)
-                    echo "Unknown Docker image variant, got \"${variant}\"." >&2
-                    exit 1
-                    ;;
-            esac
-            ;;
-        riscv64|s390x)
-            echo "${arch}"
+        "" | v7)
+            echo "armv7"
             ;;
         *)
-            echo "Unknown Docker image architecture, got \"${arch}\"." >&2
+            echo "Unknown Docker image variant, got \"${variant}\"." >&2
             exit 1
             ;;
+        esac
+        ;;
+    riscv64 | s390x)
+        echo "${arch}"
+        ;;
+    *)
+        echo "Unknown Docker image architecture, got \"${arch}\"." >&2
+        exit 1
+        ;;
     esac
 
     eval "${oldstate}"
