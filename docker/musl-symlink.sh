@@ -13,6 +13,9 @@
 set -x
 set -euo pipefail
 
+# shellcheck disable=SC1091
+. lib.sh
+
 main() {
     local sysroot="${1}"
     local arch="${2}"
@@ -42,7 +45,7 @@ main() {
     )
     for dst in "${dsts[@]}"; do
         # force a link if the dst does not exist or is broken
-        if [[ -L "${dst}" ]] && [[ ! -a "${dst}" ]]; then
+        if [[ -L "${dst}" ]] && [[ ! -e "${dst}" ]]; then
             ln -sf "${src}" "${dst}"
         elif [[ ! -f "${dst}" ]]; then
             ln -s "${src}" "${dst}"
@@ -63,16 +66,18 @@ main() {
     #   - aarch64-unknown-linux-musl
     #   - mips64-unknown-linux-muslabi64
     #   - mips64el-unknown-linux-muslabi64
+    libstdc_version=6.0.27
+    if_ubuntu_ge 24.04 libstdc_version=6.0.33
     echo '/* cross-rs linker script
  * this allows us to statically link libstdc++ to avoid segfaults
  * https://github.com/cross-rs/cross/issues/902
  */
 GROUP ( libstdc++.a AS_NEEDED( -lgcc -lc -lm ) )
-' > "${sysroot}"/lib/libstdc++.so.6.0.27
-    ln -s libstdc++.so.6.0.27 "${sysroot}"/lib/libstdc++.so.6
-    ln -s libstdc++.so.6.0.27 "${sysroot}"/lib/libstdc++.so
+' >"$sysroot/lib/libstdc++.so.$libstdc_version"
+    ln -s "libstdc++.so.$libstdc_version" "${sysroot}"/lib/libstdc++.so.6
+    ln -s "libstdc++.so.$libstdc_version" "${sysroot}"/lib/libstdc++.so
 
-    echo "${sysroot}/lib" >> "/etc/ld-musl-${arch}.path"
+    echo "${sysroot}/lib" >>"/etc/ld-musl-${arch}.path"
 
     rm -rf "${0}"
 }
