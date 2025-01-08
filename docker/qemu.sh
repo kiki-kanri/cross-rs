@@ -100,7 +100,7 @@ build_static_libcap() {
 
 build_static_pixman() {
     local version=0.34.0
-    if_ubuntu_ge 24.04 version=0.43.4
+    if_ubuntu_ge 24.04 version=0.44.2
 
     local td
     td="$(mktemp -d)"
@@ -210,7 +210,7 @@ main() {
     is_ge_python36=$(python3 -c "import sys; print(int(sys.version_info >= (3, 6)))")
     if [[ "${is_ge_python36}" == "1" ]]; then
         if_ubuntu version=7.0.0
-        if_ubuntu_ge 24.04 version=9.1.2
+        if_ubuntu_ge 24.04 version=9.2.0
         if_ubuntu install_packages ninja-build
     fi
 
@@ -220,7 +220,7 @@ main() {
     is_ge_python38=$(python3 -c "import sys; print(int(sys.version_info >= (3, 8)))")
     if [[ "${is_ge_python38}" == "1" ]]; then
         if_ubuntu version=8.2.2
-        if_ubuntu_ge 24.04 version=9.1.2
+        if_ubuntu_ge 24.04 version=9.2.0
         if_ubuntu install_packages ninja-build meson python3-pip libslirp-dev
         if_ubuntu build_static_slirp
     fi
