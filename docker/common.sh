@@ -43,3 +43,5 @@ if_ubuntu install_packages \
     libc6-dev \
     libclang-dev \
     pkg-config
+
+upgrade_packages

@@ -40,6 +40,26 @@ purge_packages() {
             yum remove -y "${purge_list[@]}"
         fi
     fi
+
+    purge_packages_cache
+}
+
+purge_packages_cache() {
+    if grep -i ubuntu /etc/os-release; then
+        apt-get autoremove -y --purge
+        apt-get autoclean
+        apt-get clean
+        rm -rf /var/cache/apt/* /var/lib/apt/lists/*
+    fi
+}
+
+upgrade_packages() {
+    if grep -i ubuntu /etc/os-release; then
+        apt-get update
+        apt-get upgrade -y
+    fi
+
+    purge_packages_cache
 }
 
 if_centos() {
