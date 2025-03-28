@@ -8,7 +8,7 @@ set -euo pipefail
 
 build_static_libffi() {
     local version=3.0.13
-    if_ubuntu_ge 24.04 version=3.4.6
+    if_ubuntu_ge 24.04 version=3.4.7
 
     local td
     td="$(mktemp -d)"
@@ -33,8 +33,8 @@ build_static_libmount() {
     if_ubuntu_ge 22.04 version_spec=2.37.2
     if_ubuntu_ge 22.04 version=2.37
 
-    if_ubuntu_ge 24.04 version_spec=2.40.2
-    if_ubuntu_ge 24.04 version=2.40
+    if_ubuntu_ge 24.04 version_spec=2.41
+    if_ubuntu_ge 24.04 version=2.41
 
     local td
     td="$(mktemp -d)"
@@ -81,7 +81,7 @@ build_static_libattr() {
 
 build_static_libcap() {
     local version=2.22
-    if_ubuntu_ge 24.04 version=2.73
+    if_ubuntu_ge 24.04 version=2.75
 
     local td
     td="$(mktemp -d)"
@@ -120,7 +120,7 @@ build_static_pixman() {
 
 build_static_slirp() {
     local version=4.1.0
-    if_ubuntu_ge 24.04 version=4.8.0
+    if_ubuntu_ge 24.04 version=4.9.0
 
     local td
     td="$(mktemp -d)"
@@ -210,7 +210,7 @@ main() {
     is_ge_python36=$(python3 -c "import sys; print(int(sys.version_info >= (3, 6)))")
     if [[ "${is_ge_python36}" == "1" ]]; then
         if_ubuntu version=7.0.0
-        if_ubuntu_ge 24.04 version=9.2.0
+        if_ubuntu_ge 24.04 version=9.2.3
         if_ubuntu install_packages ninja-build
     fi
 
@@ -220,7 +220,7 @@ main() {
     is_ge_python38=$(python3 -c "import sys; print(int(sys.version_info >= (3, 8)))")
     if [[ "${is_ge_python38}" == "1" ]]; then
         if_ubuntu version=8.2.2
-        if_ubuntu_ge 24.04 version=9.2.0
+        if_ubuntu_ge 24.04 version=9.2.3
         if_ubuntu install_packages ninja-build meson python3-pip libslirp-dev
         if_ubuntu build_static_slirp
     fi

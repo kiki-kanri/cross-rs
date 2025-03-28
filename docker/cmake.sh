@@ -8,7 +8,7 @@ set -euo pipefail
 
 main() {
     local version=3.23.1
-    if_ubuntu_ge 24.04 version=3.31.3
+    if_ubuntu_ge 24.04 version=4.0.0
 
     install_packages curl
 

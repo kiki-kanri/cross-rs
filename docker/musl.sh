@@ -27,7 +27,7 @@ main() {
     local musl_version=1.2.3
     local version=fe91582
 
-    if_ubuntu_ge 24.04 binutils_version=2.43.1
+    if_ubuntu_ge 24.04 binutils_version=2.44
     if_ubuntu_ge 24.04 gcc_version=13.3.0
     if_ubuntu_ge 24.04 musl_version=1.2.5
     if_ubuntu_ge 24.04 version=fd6be58
@@ -77,6 +77,7 @@ main() {
 
     popd
 
+    rm /tmp/build.log
     rm -rf "${td}"
     rm "${0}"
 }
