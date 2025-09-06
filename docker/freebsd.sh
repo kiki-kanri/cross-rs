@@ -79,7 +79,7 @@ latest_freebsd() {
     local releases=
     local max_release=
 
-    response=$(curl --retry 3 -sSfL "${mirror}/${FREEBSD_ARCH}/" | grep RELEASE)
+    response=$(curl -4 --retry 3 -sSfL "${mirror}/${FREEBSD_ARCH}/" | grep RELEASE)
     if [[ "${response}" != *RELEASE* ]]; then
         echo -e "\e[31merror:\e[0m could not find a candidate release for FreeBSD ${FREEBSD_MAJOR}." 1>&2
         exit 1
@@ -115,7 +115,7 @@ _freebsd_mirror() {
         # we need a timeout in case the server is down to avoid
         # infinitely hanging. timeout error code is always 124
         # these mirrors can be quite slow, so have a long timeout
-        timeout 20s curl --retry 3 -sSfL "${mirror}/${FREEBSD_ARCH}/" >/dev/null
+        timeout 20s curl -4 --retry 3 -sSfL "${mirror}/${FREEBSD_ARCH}/" >/dev/null
         code=$?
         if [[ "${code}" == 0 ]]; then
             echo "${mirror}"
@@ -144,7 +144,7 @@ bsd_url="${mirror}/${FREEBSD_ARCH}/${base_release}-RELEASE"
 
 main() {
     local binutils=2.40 \
-        gcc=6.4.0 \
+        gcc=13.3.0 \
         target="${ARCH}-unknown-freebsd${FREEBSD_MAJOR}"
 
     install_packages ca-certificates \
@@ -153,7 +153,8 @@ main() {
         make \
         wget \
         texinfo \
-        xz-utils
+        xz-utils \
+        bzip2
 
     local td
     td="$(mktemp -d)"
@@ -172,7 +173,7 @@ main() {
     ./contrib/download_prerequisites
     cd ..
 
-    curl --retry 3 -sSfL "${bsd_url}/base.txz" -O
+    curl -4 --retry 3 -sSfL "${bsd_url}/base.txz" -O
     tar -C "${td}/freebsd" -xJf base.txz ./usr/include ./usr/lib ./lib
 
     cd binutils-build
@@ -188,9 +189,10 @@ main() {
     cp "${td}/freebsd/usr/lib/libc++.so.1" "${destdir}/lib"
     cp "${td}/freebsd/usr/lib/libc++.a" "${destdir}/lib"
     cp "${td}/freebsd/usr/lib/libcxxrt.a" "${destdir}/lib"
+    cp "${td}/freebsd/usr/lib/libcxxrt.so" "${destdir}/lib"
     cp "${td}/freebsd/usr/lib/libcompiler_rt.a" "${destdir}/lib"
     cp "${td}/freebsd/usr/lib"/lib{c,util,m,ssp_nonshared,memstat}.a "${destdir}/lib"
-    cp "${td}/freebsd/usr/lib"/lib{rt,execinfo,procstat}.so.1 "${destdir}/lib"
+    cp "${td}/freebsd/usr/lib"/lib{rt,execinfo,procstat}.so "${destdir}/lib"
     cp "${td}/freebsd/usr/lib"/libmemstat.so.3 "${destdir}/lib"
     cp "${td}/freebsd/usr/lib"/{crt1,Scrt1,crti,crtn}.o "${destdir}/lib"
     cp "${td}/freebsd/usr/lib"/libkvm.a "${destdir}/lib"
@@ -228,6 +230,7 @@ main() {
         --disable-libvtv \
         --disable-lto \
         --disable-nls \
+        --disable-multilib \
         --enable-languages=c,c++,fortran \
         --target="${target}"
     make "-j$(nproc)"
@@ -240,7 +243,7 @@ main() {
     purge_packages
 
     # store the version info for the FreeBSD release
-    bsd_revision=$(curl --retry 3 -sSfL "${bsd_url}/REVISION")
+    bsd_revision=$(curl -4 --retry 3 -sSfL "${bsd_url}/REVISION")
     echo "${base_release} (${bsd_revision})" > /opt/freebsd-version
 
     rm -rf "${td}"

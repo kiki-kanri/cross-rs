@@ -44,6 +44,9 @@ main() {
     # Don't depend on the mirrors of sabotage linux that musl-cross-make uses.
     local linux_headers_site=https://ci-mirrors.rust-lang.org/rustc/sabotage-linux-tarballs
     local linux_ver=headers-4.19.88
+    local gcc_ver=9.2.0
+    local target
+    find_argument TARGET target "${@}"
 
     # Ensure sources directory exists
     mkdir -p ./sources
@@ -63,9 +66,9 @@ main() {
     # linked, so our behavior has maximum portability, and is consistent
     # with popular musl distros.
     hide_output make install "-j$(nproc)" \
-        GCC_VER=$gcc_version \
-        MUSL_VER=$musl_version \
-        BINUTILS_VER=$binutils_version \
+        GCC_VER=${gcc_ver} \
+        MUSL_VER=1.2.3 \
+        BINUTILS_VER=2.33.1 \
         DL_CMD='curl --retry 3 -sSfL -C - -o' \
         LINUX_HEADERS_SITE="${linux_headers_site}" \
         LINUX_VER="${linux_ver}" \
@@ -77,7 +80,16 @@ main() {
 
     popd
 
-    rm /tmp/build.log
+    symlinkify_and_strip_toolchain "${target}" "${gcc_ver}"
+
+    for dir in /usr/local/libexec/gcc/"${target}"/*; do
+        pushd "${dir}" || exit 1
+        strip cc1 cc1plus collect2 f951 lto1 lto-wrapper liblto_plugin.so.0.0.0
+        popd || exit 1
+    done
+
+    rm -rf /tmp/build.log
+
     rm -rf "${td}"
     rm "${0}"
 }

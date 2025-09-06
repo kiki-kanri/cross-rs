@@ -220,7 +220,7 @@ terminate.
 | `armv7-unknown-linux-musleabihf`       | 1.2.3  | 9.2.0  | ✓   | 6.1.0 |   ✓    |
 | `i586-unknown-linux-gnu`               | 2.31   | 9.4.0  | ✓   | N/A   |   ✓    |
 | `i586-unknown-linux-musl`              | 1.2.3  | 9.2.0  | ✓   | N/A   |   ✓    |
-| `i686-unknown-freebsd`                 | 1.5    | 6.4.0  | ✓   | N/A   |        |
+| `i686-unknown-freebsd`                 | 1.6    | 13.3.0 | ✓   | N/A   |        |
 | `i686-linux-android` [1]               | 9.0.8  | 9.0.8  | ✓   | 6.1.0 |   ✓    |
 | `i686-pc-windows-gnu`                  | N/A    | 9.4    | ✓   | N/A   |   ✓    |
 | `i686-unknown-linux-gnu`               | 2.31   | 9.4.0  | ✓   | 6.1.0 |   ✓    |
@@ -238,6 +238,7 @@ terminate.
 | `powerpc64-unknown-linux-gnu`          | 2.31   | 9.4.0  | ✓   | 6.1.0 |   ✓    |
 | `powerpc64le-unknown-linux-gnu`        | 2.31   | 9.4.0  | ✓   | 6.1.0 |   ✓    |
 | `riscv64gc-unknown-linux-gnu`          | 2.35   | 11.4.0 | ✓   | 8.2.2 |   ✓    |
+| `riscv64gc-unknown-linux-musl`         | 1.2.5  | 14.2.0 | ✓   | 8.2.2 |   ✓    |
 | `s390x-unknown-linux-gnu`              | 2.31   | 9.4.0  | ✓   | 6.1.0 |   ✓    |
 | `sparc64-unknown-linux-gnu`            | 2.31   | 9.4.0  | ✓   | 6.1.0 |   ✓    |
 | `sparcv9-sun-solaris`                  | 1.22.7 | 8.4.0  | ✓   | N/A   |        |
@@ -254,7 +255,7 @@ terminate.
 | `x86_64-linux-android` [1]             | 9.0.8  | 9.0.8  | ✓   | 6.1.0 |   ✓    |
 | `x86_64-pc-windows-gnu`                | N/A    | 9.3    | ✓   | N/A   |   ✓    |
 | `x86_64-pc-solaris`                    | 1.22.7 | 8.4.0  | ✓   | N/A   |        |
-| `x86_64-unknown-freebsd`               | 1.5    | 6.4.0  | ✓   | N/A   |        |
+| `x86_64-unknown-freebsd`               | 1.6    | 13.3.0 | ✓   | N/A   |        |
 | `x86_64-unknown-dragonfly` [2] [3]     | 6.0.1  | 10.3.0 | ✓   | N/A   |        |
 | `x86_64-unknown-illumos`               | 1.20.4 | 8.4.0  | ✓   | N/A   |        |
 | `x86_64-unknown-linux-gnu`             | 2.31   | 9.4.0  | ✓   | 6.1.0 |   ✓    |

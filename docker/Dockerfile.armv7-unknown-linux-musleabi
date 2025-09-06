@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as cross-base
+FROM ubuntu:20.04 AS cross-base
 ENV DEBIAN_FRONTEND=noninteractive
 
 COPY common.sh lib.sh /
@@ -10,7 +10,7 @@ RUN /cmake.sh
 COPY xargo.sh /
 RUN /xargo.sh
 
-FROM cross-base as build
+FROM cross-base AS build
 
 COPY qemu.sh /
 RUN /qemu.sh arm
@@ -22,6 +22,13 @@ RUN /musl.sh \
                       --with-float=soft \
                       --with-mode=thumb \
                       --with-mode=arm"
+
+COPY tidyup.sh /
+RUN /tidyup.sh
+
+FROM scratch AS final
+COPY --from=build / /
+CMD ["/bin/bash"]
 
 ENV CROSS_TOOLCHAIN_PREFIX=arm-linux-musleabi-
 ENV CROSS_SYSROOT=/usr/local/arm-linux-musleabi

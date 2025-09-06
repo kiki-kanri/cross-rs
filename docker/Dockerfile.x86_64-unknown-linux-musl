@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as cross-base
+FROM ubuntu:20.04 AS cross-base
 ENV DEBIAN_FRONTEND=noninteractive
 
 COPY common.sh lib.sh /
@@ -10,13 +10,20 @@ RUN /cmake.sh
 COPY xargo.sh /
 RUN /xargo.sh
 
-FROM cross-base as build
+FROM cross-base AS build
 
 COPY musl.sh /
 RUN /musl.sh TARGET=x86_64-linux-musl
 
 COPY qemu.sh /
 RUN /qemu.sh x86_64
+
+COPY tidyup.sh /
+RUN /tidyup.sh
+
+FROM scratch AS final
+COPY --from=build / /
+CMD ["/bin/bash"]
 
 ENV CROSS_TOOLCHAIN_PREFIX=x86_64-linux-musl-
 ENV CROSS_SYSROOT=/usr/local/x86_64-linux-musl

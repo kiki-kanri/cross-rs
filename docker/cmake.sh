@@ -20,12 +20,14 @@ main() {
     local cmake_sha256
 
     local narch
-    narch="$(dpkg --print-architecture)"
+    narch="$(uname -p)"
+
+    echo "[INFO] $narch"
 
     case "${narch}" in
-    amd64)
+    x86_64)
         cmake_arch="linux-x86_64"
-        cmake_sha256="33ba237f2850a82d5c71c1d41803ab832a9a7aac7d99fa6e48bbe5bb4d66653c"
+        cmake_sha256="da2a9b18c3bfb136917fa1a579aa5316b01c1d6c111043d03f18877ff05bda30"
         ;;
     arm64)
         cmake_arch="linux-aarch64"
